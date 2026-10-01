@@ -1,0 +1,17 @@
+services:
+  db:
+    image: postgres:16
+    container_name: ideal-electric-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ideal_dev
+      POSTGRES_PASSWORD: dev_password_change_me
+      POSTGRES_DB: ideal_electric
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+volumes:
+  pgdata:
+  
