@@ -15,6 +15,7 @@ class Series(TimestampMixin, Base):
     __tablename__ = "series"
     __table_args__ = (
         UniqueConstraint("brand_id", "name", name="uq_series_brand_name"),
+        UniqueConstraint("id", "brand_id", name="uq_series_id_brand_id"),
         CheckConstraint(
             "status IN ('draft', 'published', 'archived')",
             name="status",

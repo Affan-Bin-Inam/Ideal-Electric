@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from sqlalchemy import CheckConstraint, ForeignKey, String, Text, UniqueConstraint
+from sqlalchemy import CheckConstraint, ForeignKey, ForeignKeyConstraint, String, Text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from api.base import Base, TimestampMixin
@@ -20,6 +20,16 @@ class Product(TimestampMixin, Base):
             "status IN ('draft', 'published', 'archived')",
             name="status",
         ),
+        CheckConstraint(
+            "series_id IS NULL OR brand_id IS NOT NULL",
+            name="series_requires_brand",
+        ),
+        ForeignKeyConstraint(
+            ["series_id", "brand_id"],
+            ["series.id", "series.brand_id"],
+            name="fk_products_series_brand_consistency",
+            ondelete="SET NULL",
+        ),
     )
 
     id: Mapped[int] = mapped_column(primary_key=True)
@@ -29,9 +39,7 @@ class Product(TimestampMixin, Base):
     brand_id: Mapped[int | None] = mapped_column(
         ForeignKey("brands.id", ondelete="SET NULL")
     )
-    series_id: Mapped[int | None] = mapped_column(
-        ForeignKey("series.id", ondelete="SET NULL")
-    )
+    series_id: Mapped[int | None] = mapped_column()
     name: Mapped[str] = mapped_column(String(200))
     slug: Mapped[str] = mapped_column(String(220), unique=True, index=True)
     model_code: Mapped[str | None] = mapped_column(String(80))
