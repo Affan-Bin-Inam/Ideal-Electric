@@ -2,5 +2,6 @@
 from api.models.brand import Brand
 from api.models.category import Category
 from api.models.series import Series
+from api.models.product import Product
 
-__all__ = ["Brand", "Category", "Series"]
+__all__ = ["Brand", "Category", "Series", "Product"]
