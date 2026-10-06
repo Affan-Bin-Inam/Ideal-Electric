@@ -2,8 +2,9 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from sqlalchemy import CheckConstraint, ForeignKey, ForeignKeyConstraint, String, Text
+from sqlalchemy import CheckConstraint, ForeignKey, ForeignKeyConstraint, String, Text, Computed, Index
 from sqlalchemy.orm import Mapped, mapped_column, relationship
+from sqlalchemy.dialects.postgresql import TSVECTOR
 
 from api.base import Base, TimestampMixin
 
@@ -30,6 +31,13 @@ class Product(TimestampMixin, Base):
             name="fk_products_series_brand_consistency",
             ondelete="SET NULL",
         ),
+        Index("ix_products_search_vector", "search_vector", postgresql_using="gin"),
+        Index(
+            "ix_products_name_trgm",
+            "name",
+            postgresql_using="gin",
+            postgresql_ops={"name": "gin_trgm_ops"},
+        ),
     )
 
     id: Mapped[int] = mapped_column(primary_key=True)
@@ -55,3 +63,12 @@ class Product(TimestampMixin, Base):
     category: Mapped["Category"] = relationship()
     brand: Mapped["Brand | None"] = relationship()
     series: Mapped["Series | None"] = relationship()
+
+    search_vector: Mapped[str] = mapped_column(
+    TSVECTOR,
+    Computed(
+        "to_tsvector('english', coalesce(name, '') || ' ' || "
+        "coalesce(summary, '') || ' ' || coalesce(description, ''))",
+        persisted=True,
+            ),
+    )
