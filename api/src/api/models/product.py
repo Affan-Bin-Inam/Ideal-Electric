@@ -12,6 +12,7 @@ if TYPE_CHECKING:
     from api.models.brand import Brand
     from api.models.category import Category
     from api.models.series import Series
+    from api.models.product_highlight import ProductHighlight
 
 
 class Product(TimestampMixin, Base):
@@ -71,4 +72,11 @@ class Product(TimestampMixin, Base):
         "coalesce(summary, '') || ' ' || coalesce(description, ''))",
         persisted=True,
             ),
+    )
+
+    highlights: Mapped[list["ProductHighlight"]] = relationship(
+        back_populates="product",
+        cascade="all, delete-orphan",
+        passive_deletes=True,
+        order_by="ProductHighlight.sort_order",
     )
