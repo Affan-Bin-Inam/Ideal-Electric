@@ -14,6 +14,7 @@ if TYPE_CHECKING:
     from api.models.series import Series
     from api.models.product_highlight import ProductHighlight
     from api.models.product_image import ProductImage
+    from api.models.product_attribute_value import ProductAttributeValue
 
 
 class Product(TimestampMixin, Base):
@@ -89,4 +90,10 @@ class Product(TimestampMixin, Base):
         cascade="all, delete-orphan",
         passive_deletes=True,
         order_by="ProductImage.sort_order",
+    )
+
+    attribute_values: Mapped[list["ProductAttributeValue"]] = relationship(
+        back_populates="product",
+        cascade="all, delete-orphan",
+        passive_deletes=True,
     )
