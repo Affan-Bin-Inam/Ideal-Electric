@@ -13,6 +13,7 @@ if TYPE_CHECKING:
     from api.models.category import Category
     from api.models.series import Series
     from api.models.product_highlight import ProductHighlight
+    from api.models.product_image import ProductImage
 
 
 class Product(TimestampMixin, Base):
@@ -39,6 +40,8 @@ class Product(TimestampMixin, Base):
             postgresql_using="gin",
             postgresql_ops={"name": "gin_trgm_ops"},
         ),
+        Index("ix_products_category_status_sort", "category_id", "status", "sort_order"),
+        Index("ix_products_series_id", "series_id"),
     )
 
     id: Mapped[int] = mapped_column(primary_key=True)
@@ -79,4 +82,11 @@ class Product(TimestampMixin, Base):
         cascade="all, delete-orphan",
         passive_deletes=True,
         order_by="ProductHighlight.sort_order",
+    )
+
+    images: Mapped[list["ProductImage"]] = relationship(
+        back_populates="product",
+        cascade="all, delete-orphan",
+        passive_deletes=True,
+        order_by="ProductImage.sort_order",
     )
