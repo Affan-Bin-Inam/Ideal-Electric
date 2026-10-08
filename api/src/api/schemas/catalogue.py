@@ -113,3 +113,34 @@ class ProductDetail(ORMModel):
     specifications: list[SpecOut]
     industries: list[IndustryOut]
     related: list[ProductCard]
+
+
+class FacetOption(BaseModel):
+    value: str
+    count: int
+
+
+class Facet(BaseModel):
+    key: str
+    label: str
+    unit: str | None
+    data_type: str
+    options: list[FacetOption]
+
+
+class SeriesFacet(BaseModel):
+    name: str
+    slug: str
+    count: int
+
+
+class FacetSet(BaseModel):
+    total: int
+    series: list[SeriesFacet]
+    attributes: list[Facet]
+
+
+class SuggestionOut(BaseModel):
+    name: str
+    slug: str
+    category: str
