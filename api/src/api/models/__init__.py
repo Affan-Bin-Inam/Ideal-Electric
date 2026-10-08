@@ -12,6 +12,8 @@ from api.models.product_image import ProductImage
 from api.models.product_industry import ProductIndustry
 from api.models.related_product import RelatedProduct
 from api.models.series import Series
+from api.models.refresh_token import RefreshToken
+from api.models.user import User
 
 __all__ = [
     "AttributeDefinition",
@@ -28,4 +30,6 @@ __all__ = [
     "ProductIndustry",
     "RelatedProduct",
     "Series",
+    "RefreshToken",
+    "User"
 ]
