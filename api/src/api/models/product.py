@@ -67,7 +67,10 @@ class Product(TimestampMixin, Base):
 
     category: Mapped["Category"] = relationship()
     brand: Mapped["Brand | None"] = relationship()
-    series: Mapped["Series | None"] = relationship()
+    series: Mapped["Series | None"] = relationship(
+        foreign_keys="Product.series_id",
+        primaryjoin="Product.series_id == Series.id",
+    )
 
     search_vector: Mapped[str] = mapped_column(
     TSVECTOR,
