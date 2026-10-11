@@ -34,5 +34,5 @@ class Category(TimestampMixin, Base):
         remote_side=[id], back_populates="children"
     )
     children: Mapped[list[Category]] = relationship(
-        back_populates="parent", cascade="all"
+        back_populates="parent", passive_deletes=True
     )

@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from sqlalchemy import text
 
 from api.deps import DbSession
-from api.routers import auth, catalogue, products
+from api.routers import admin_categories, admin_taxonomy, auth, catalogue, products
 
 app = FastAPI(title="Ideal Electric API", version="0.1.0")
 
@@ -21,3 +21,5 @@ async def health_check_db(db: DbSession):
 app.include_router(catalogue.router, prefix="/api/v1")
 app.include_router(products.router, prefix="/api/v1")
 app.include_router(auth.router, prefix="/api/v1")
+app.include_router(admin_categories.router, prefix="/api/v1")
+app.include_router(admin_taxonomy.router, prefix="/api/v1")

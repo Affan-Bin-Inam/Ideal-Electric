@@ -28,6 +28,7 @@ from api.security import hash_password  # noqa: E402
 engine.sync_engine.echo = False
 
 BASE_URL = "http://testserver"
+PASSWORD = "correct-horse-battery"
 
 
 @pytest.fixture(scope="session", autouse=True)
@@ -43,9 +44,14 @@ def migrated_database():
 
 
 @pytest_asyncio.fixture(autouse=True)
-async def clean_auth_tables():
+async def clean_tables():
     async with engine.begin() as conn:
-        await conn.execute(text("TRUNCATE users, refresh_tokens RESTART IDENTITY CASCADE"))
+        await conn.execute(
+            text(
+                "TRUNCATE users, refresh_tokens, audit_logs, categories, brands, industries "
+                "RESTART IDENTITY CASCADE"
+            )
+        )
     yield
 
 
@@ -58,10 +64,7 @@ async def client():
 @pytest_asyncio.fixture
 async def make_user():
     async def _make(
-        email="admin@example.com",
-        password="correct-horse-battery",
-        role="admin",
-        is_active=True,
+        email="admin@example.com", password=PASSWORD, role="admin", is_active=True,
     ):
         async with async_session_factory() as session:
             user = User(
@@ -76,3 +79,21 @@ async def make_user():
             return user
 
     return _make
+
+
+@pytest_asyncio.fixture
+async def login(client):
+    async def _login(email="admin@example.com", password=PASSWORD):
+        response = await client.post(
+            "/api/v1/auth/login", json={"email": email, "password": password}
+        )
+        assert response.status_code == 200, response.text
+
+    return _login
+
+
+@pytest_asyncio.fixture
+async def admin_client(client, make_user, login):
+    await make_user()
+    await login()
+    return client

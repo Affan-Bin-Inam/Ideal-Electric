@@ -32,7 +32,7 @@ class Product(TimestampMixin, Base):
             ["series_id", "brand_id"],
             ["series.id", "series.brand_id"],
             name="fk_products_series_brand_consistency",
-            ondelete="SET NULL",
+            ondelete="RESTRICT",
         ),
         Index("ix_products_search_vector", "search_vector", postgresql_using="gin"),
         Index(
