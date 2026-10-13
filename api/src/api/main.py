@@ -2,7 +2,10 @@ from fastapi import FastAPI
 from sqlalchemy import text
 
 from api.deps import DbSession
-from api.routers import admin_categories, admin_taxonomy, auth, catalogue, products
+from api.routers import (
+    admin_categories, admin_inquiries, admin_products, admin_taxonomy, auth, catalogue,
+    inquiries, products,
+)
 
 app = FastAPI(title="Ideal Electric API", version="0.1.0")
 
@@ -23,3 +26,6 @@ app.include_router(products.router, prefix="/api/v1")
 app.include_router(auth.router, prefix="/api/v1")
 app.include_router(admin_categories.router, prefix="/api/v1")
 app.include_router(admin_taxonomy.router, prefix="/api/v1")
+app.include_router(admin_products.router, prefix="/api/v1")
+app.include_router(inquiries.router, prefix="/api/v1")
+app.include_router(admin_inquiries.router, prefix="/api/v1")

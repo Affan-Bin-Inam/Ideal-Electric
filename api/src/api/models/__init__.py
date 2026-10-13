@@ -5,6 +5,8 @@ from api.models.category import Category
 from api.models.category_attribute import CategoryAttribute
 from api.models.category_document import CategoryDocument
 from api.models.industry import Industry
+from api.models.inquiry import Inquiry
+from api.models.inquiry_note import InquiryNote
 from api.models.media_asset import MediaAsset
 from api.models.product import Product
 from api.models.product_attribute_value import ProductAttributeValue
@@ -16,6 +18,7 @@ from api.models.related_product import RelatedProduct
 from api.models.series import Series
 from api.models.user import User
 
+
 __all__ = [
     "AttributeDefinition",
     "AuditLog",
@@ -24,6 +27,8 @@ __all__ = [
     "CategoryAttribute",
     "CategoryDocument",
     "Industry",
+    "Inquiry",
+    "InquiryNote",
     "MediaAsset",
     "Product",
     "ProductAttributeValue",

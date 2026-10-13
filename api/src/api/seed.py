@@ -435,7 +435,7 @@ from __future__ import annotations
 
 import asyncio
 import re
-from decimal import Decimal
+# from decimal import Decimal
 
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -463,7 +463,7 @@ from api.models import (
     RelatedProduct,
     Series,
 )
-
+from api.services.attribute_values import value_columns
 
 def slugify(text: str) -> str:
     return re.sub(r"[^a-z0-9]+", "-", text.lower()).strip("-")
@@ -480,23 +480,23 @@ async def get_or_create(session: AsyncSession, model, lookup: dict, defaults: di
     return obj, True
 
 
-def value_columns(definition: AttributeDefinition, value) -> dict:
-    """Map a Python value onto the right column, checking it against the definition."""
-    if definition.data_type == "multi_choice":
-        bad = [v for v in value if v not in definition.choices]
-    elif definition.data_type == "single_choice":
-        bad = [] if value in definition.choices else [value]
-    else:
-        bad = []
-    if bad:
-        raise ValueError(f"{definition.key}: {bad} not in choices {definition.choices}")
-    if definition.data_type == "number":
-        return {"value_number": Decimal(str(value))}
-    if definition.data_type == "boolean":
-        return {"value_bool": value}
-    if definition.data_type == "multi_choice":
-        return {"value_choices": list(value)}
-    return {"value_text": value}  # text and single_choice
+# def value_columns(definition: AttributeDefinition, value) -> dict:
+#     """Map a Python value onto the right column, checking it against the definition."""
+#     if definition.data_type == "multi_choice":
+#         bad = [v for v in value if v not in definition.choices]
+#     elif definition.data_type == "single_choice":
+#         bad = [] if value in definition.choices else [value]
+#     else:
+#         bad = []
+#     if bad:
+#         raise ValueError(f"{definition.key}: {bad} not in choices {definition.choices}")
+#     if definition.data_type == "number":
+#         return {"value_number": Decimal(str(value))}
+#     if definition.data_type == "boolean":s
+#         return {"value_bool": value}
+#     if definition.data_type == "multi_choice":
+#         return {"value_choices": list(value)}
+#     return {"value_text": value}  # text and single_choice
 
 
 async def seed(session: AsyncSession) -> None:

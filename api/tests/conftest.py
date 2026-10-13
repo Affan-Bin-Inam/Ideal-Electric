@@ -14,6 +14,7 @@ assert TEST_DB_URL.rsplit("/", 1)[-1].endswith("_test"), (
 )
 os.environ["DATABASE_URL"] = TEST_DB_URL
 os.environ["SECRET_KEY"] = "test-secret-key-that-is-at-least-32-characters-long"
+os.environ["TURNSTILE_SECRET_KEY"] = "test-turnstile-secret"
 
 import pytest  # noqa: E402
 import pytest_asyncio  # noqa: E402
@@ -24,6 +25,7 @@ from api.db import async_session_factory, engine  # noqa: E402
 from api.main import app  # noqa: E402
 from api.models import User  # noqa: E402
 from api.security import hash_password  # noqa: E402
+from api.seed import seed  # noqa: E402
 
 engine.sync_engine.echo = False
 
@@ -97,3 +99,15 @@ async def admin_client(client, make_user, login):
     await make_user()
     await login()
     return client
+
+
+@pytest_asyncio.fixture
+async def seeded():
+    async with engine.begin() as conn:
+        await conn.execute(
+            text("TRUNCATE brands, categories, industries, attribute_definitions, products "
+                 "RESTART IDENTITY CASCADE")
+        )
+    async with async_session_factory() as session:
+        async with session.begin():
+            await seed(session)

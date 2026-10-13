@@ -14,6 +14,7 @@ class Settings(BaseSettings):
         "http://localhost:8000",
         "http://127.0.0.1:8000",
     ]
+    turnstile_secret_key: str = Field(min_length=1)
 
     model_config = SettingsConfigDict(env_file=".env")
 
