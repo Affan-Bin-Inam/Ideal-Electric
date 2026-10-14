@@ -53,7 +53,7 @@ async def clean_tables():
         await conn.execute(
             text(
                 "TRUNCATE users, refresh_tokens, audit_logs, categories, brands, industries, "
-                "media_assets RESTART IDENTITY CASCADE"
+                "media_assets, site_settings RESTART IDENTITY CASCADE"
             )
         )
     yield

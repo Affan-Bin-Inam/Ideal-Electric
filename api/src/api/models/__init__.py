@@ -16,6 +16,7 @@ from api.models.product_industry import ProductIndustry
 from api.models.refresh_token import RefreshToken
 from api.models.related_product import RelatedProduct
 from api.models.series import Series
+from api.models.site_settings import SiteSettings
 from api.models.user import User
 
 
@@ -38,5 +39,6 @@ __all__ = [
     "RefreshToken",
     "RelatedProduct",
     "Series",
+    "SiteSettings",
     "User",
 ]

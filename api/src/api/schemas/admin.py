@@ -3,7 +3,7 @@ from __future__ import annotations
 from datetime import datetime
 from typing import Annotated, Literal
 
-from pydantic import BaseModel, ConfigDict, Field, StringConstraints
+from pydantic import BaseModel, ConfigDict, Field, StringConstraints, EmailStr
 
 from api.schemas.catalogue import ORMModel
 
@@ -14,7 +14,8 @@ Status = Literal["draft", "published", "archived"]
 # never validated or used, because endpoints read only the fields a client actually sent, so an
 # explicit null for those fields is rejected while omitting them is fine. extra="forbid" turns
 # attempts to change fields that can't change into an error, not a silent no-op.
-
+Url300 = Annotated[str, StringConstraints(max_length=300, pattern=r"^https?://\S+$")]
+Phone = Annotated[str, StringConstraints(pattern=r"^\+?[0-9][0-9\s\-()]{5,28}$")]
 
 # ------------------------------------------------------------------ categories
 
@@ -259,3 +260,49 @@ class ProductAdminPage(BaseModel):
     page: int
     page_size: int
     pages: int
+
+#-----------------------------------------------------siteSetting
+
+class SiteSettingsUpdate(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    company_name: str = Field(default=None, min_length=2, max_length=160)
+    tagline: str | None = Field(default=None, max_length=200)
+    about_short: str | None = None
+    phone_primary: Phone | None = None
+    phone_secondary: Phone | None = None
+    email_sales: EmailStr | None = None
+    whatsapp_number: str | None = Field(default=None, pattern=r"^[0-9]{8,15}$")
+    address_line: str | None = Field(default=None, max_length=300)
+    city: str | None = Field(default=None, max_length=100)
+    google_maps_url: Url300 | None = None
+    business_hours: str | None = Field(default=None, max_length=300)
+    facebook_url: Url300 | None = None
+    linkedin_url: Url300 | None = None
+    instagram_url: Url300 | None = None
+    default_meta_title: str | None = Field(default=None, max_length=160)
+    default_meta_description: str | None = Field(default=None, max_length=320)
+    is_placeholder: bool = None
+
+
+class SiteSettingsPublic(ORMModel):
+    company_name: str
+    tagline: str | None
+    about_short: str | None
+    phone_primary: str | None
+    phone_secondary: str | None
+    email_sales: str | None
+    whatsapp_number: str | None
+    address_line: str | None
+    city: str | None
+    google_maps_url: str | None
+    business_hours: str | None
+    facebook_url: str | None
+    linkedin_url: str | None
+    instagram_url: str | None
+    default_meta_title: str | None
+    default_meta_description: str | None
+
+
+class SiteSettingsAdminOut(SiteSettingsPublic):
+    is_placeholder: bool
+    updated_at: datetime

@@ -6,8 +6,8 @@ from sqlalchemy import text
 
 from api.deps import DbSession
 from api.routers import (
-    admin_attachments, admin_categories, admin_inquiries, admin_media, admin_products,
-    admin_taxonomy, auth, catalogue, inquiries, products,
+    admin_attachments, admin_categories, admin_inquiries, admin_media, admin_products, admin_site_settings,
+    admin_taxonomy, auth, catalogue, inquiries, products, site_settings,
 )
 from api.services.storage import storage
 
@@ -30,10 +30,12 @@ async def health_check_db(db: DbSession):
 
 app.include_router(catalogue.router, prefix="/api/v1")
 app.include_router(products.router, prefix="/api/v1")
+app.include_router(site_settings.router, prefix="/api/v1")   # new, public
 app.include_router(auth.router, prefix="/api/v1")
 app.include_router(admin_categories.router, prefix="/api/v1")
 app.include_router(admin_taxonomy.router, prefix="/api/v1")
 app.include_router(admin_products.router, prefix="/api/v1")
+app.include_router(admin_site_settings.router, prefix="/api/v1")   # new, admin
 app.include_router(inquiries.router, prefix="/api/v1")
 app.include_router(admin_inquiries.router, prefix="/api/v1")
 
