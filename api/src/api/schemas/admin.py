@@ -29,6 +29,7 @@ class CategoryCreate(BaseModel):
     status: Status = "draft"
     seo_title: str | None = Field(default=None, max_length=160)
     seo_description: str | None = Field(default=None, max_length=320)
+    is_featured: bool = False
 
 
 class CategoryUpdate(BaseModel):
@@ -42,6 +43,7 @@ class CategoryUpdate(BaseModel):
     seo_title: str | None = Field(default=None, max_length=160)
     seo_description: str | None = Field(default=None, max_length=320)
     is_placeholder: bool = None
+    is_featured: bool = None
 
 
 class CategoryAdminOut(ORMModel):
@@ -58,6 +60,7 @@ class CategoryAdminOut(ORMModel):
     created_at: datetime
     updated_at: datetime
     product_count: int = 0
+    is_featured: bool
 
 
 # ------------------------------------------------------------------ series

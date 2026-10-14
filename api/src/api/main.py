@@ -7,7 +7,7 @@ from sqlalchemy import text
 from api.deps import DbSession
 from api.routers import (
     admin_attachments, admin_categories, admin_inquiries, admin_media, admin_products, admin_site_settings,
-    admin_taxonomy, auth, catalogue, inquiries, products, site_settings,
+    admin_taxonomy, auth, catalogue, inquiries, products, site_settings, homepage, admin_homepage
 )
 from api.services.storage import storage
 
@@ -44,3 +44,5 @@ app.include_router(admin_inquiries.router, prefix="/api/v1")
 app.mount(storage.url_prefix, StaticFiles(directory=storage.root), name="media")
 app.include_router(admin_media.router, prefix="/api/v1")
 app.include_router(admin_attachments.router, prefix="/api/v1")
+app.include_router(homepage.router, prefix="/api/v1")
+app.include_router(admin_homepage.router, prefix="/api/v1")

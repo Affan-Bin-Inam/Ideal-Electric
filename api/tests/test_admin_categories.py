@@ -182,3 +182,43 @@ async def test_delete_an_empty_category(admin_client):
     assert (await admin_client.delete(f"{CATEGORIES}/{created['id']}")).status_code == 204
     assert (await admin_client.get(f"{CATEGORIES}/{created['id']}")).status_code == 404
     assert [r.action for r in await audit_rows()] == ["create", "delete"]
+
+
+# ------------------------------------------------------------------ is_featured
+
+CATEGORIES_URL = "/api/v1/admin/categories"
+
+
+async def test_new_category_is_not_featured_by_default(admin_client):
+    response = await admin_client.post(CATEGORIES_URL, json={"name": "Cables"})
+    assert response.status_code == 201
+    assert response.json()["is_featured"] is False
+
+
+async def test_category_can_be_created_as_featured(admin_client):
+    response = await admin_client.post(
+        CATEGORIES_URL, json={"name": "Switchgear", "is_featured": True}
+    )
+    assert response.status_code == 201
+    assert response.json()["is_featured"] is True
+
+
+async def test_category_can_be_featured_and_unfeatured(admin_client):
+    created = (await admin_client.post(CATEGORIES_URL, json={"name": "Lighting"})).json()
+    url = f"{CATEGORIES_URL}/{created['id']}"
+
+    response = await admin_client.patch(url, json={"is_featured": True})
+    assert response.status_code == 200
+    assert response.json()["is_featured"] is True
+    assert (await admin_client.get(url)).json()["is_featured"] is True  # it persisted
+
+    response = await admin_client.patch(url, json={"is_featured": False})
+    assert response.json()["is_featured"] is False
+
+
+async def test_featured_flag_cannot_be_null(admin_client):
+    created = (await admin_client.post(CATEGORIES_URL, json={"name": "Meters"})).json()
+    response = await admin_client.patch(
+        f"{CATEGORIES_URL}/{created['id']}", json={"is_featured": None}
+    )
+    assert response.status_code == 422

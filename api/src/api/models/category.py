@@ -29,7 +29,7 @@ class Category(TimestampMixin, Base):
     seo_title: Mapped[str | None] = mapped_column(String(160))
     seo_description: Mapped[str | None] = mapped_column(String(320))
     is_placeholder: Mapped[bool] = mapped_column(default=False, server_default="false")
-
+    is_featured: Mapped[bool] = mapped_column(default=False, server_default="false") #--------------- new line
     parent: Mapped[Category | None] = relationship(
         remote_side=[id], back_populates="children"
     )

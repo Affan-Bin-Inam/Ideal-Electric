@@ -4,6 +4,7 @@ from api.models.brand import Brand
 from api.models.category import Category
 from api.models.category_attribute import CategoryAttribute
 from api.models.category_document import CategoryDocument
+from api.models.homepage_section import HomepageSection
 from api.models.industry import Industry
 from api.models.inquiry import Inquiry
 from api.models.inquiry_note import InquiryNote
@@ -27,6 +28,7 @@ __all__ = [
     "Category",
     "CategoryAttribute",
     "CategoryDocument",
+    "HomepageSection",
     "Industry",
     "Inquiry",
     "InquiryNote",
