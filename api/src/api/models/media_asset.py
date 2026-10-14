@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from sqlalchemy import BigInteger, CheckConstraint, String, text
+from sqlalchemy import BigInteger, CheckConstraint, ForeignKey, String, text
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import Mapped, mapped_column
 
@@ -26,3 +26,6 @@ class MediaAsset(TimestampMixin, Base):
         JSONB, default=dict, server_default=text("'{}'::jsonb")
     )
     is_placeholder: Mapped[bool] = mapped_column(default=False, server_default="false")
+    uploaded_by_id: Mapped[int | None] = mapped_column(
+        ForeignKey("users.id", ondelete="SET NULL")
+    )

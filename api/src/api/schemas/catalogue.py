@@ -53,6 +53,7 @@ class CategoryDetail(ORMModel):
     parent: CategoryBrief | None
     children: list[CategoryNode]
     attributes: list[AttributeOut]
+    documents: list[DocumentPublic] = Field(default_factory=list)
 
 
 class BrandBrief(ORMModel):
@@ -64,6 +65,18 @@ class SeriesBrief(ORMModel):
     name: str
     slug: str
 
+class ImageOut(BaseModel):
+    thumb_url: str
+    medium_url: str
+    large_url: str
+    alt: str
+
+
+class DocumentPublic(BaseModel):
+    title: str
+    doc_type: str
+    access: str
+    url: str | None
 
 class ProductCard(ORMModel):
     id: int
@@ -74,6 +87,7 @@ class ProductCard(ORMModel):
     is_featured: bool
     category: CategoryBrief
     series: SeriesBrief | None
+    image: ImageOut | None = None
 
 
 class ProductPage(BaseModel):
@@ -113,6 +127,7 @@ class ProductDetail(ORMModel):
     specifications: list[SpecOut]
     industries: list[IndustryOut]
     related: list[ProductCard]
+    images: list[ImageOut] = Field(default_factory=list)
 
 
 class FacetOption(BaseModel):

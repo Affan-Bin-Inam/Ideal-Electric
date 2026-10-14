@@ -13,8 +13,10 @@ dependencies = [
     "asyncpg>=0.31.0",
     "fastapi>=0.142.2",
     "httpx>=0.28.1",
+    "pillow>=12.3.0",
     "pydantic-settings>=2.15.0",
     "pyjwt>=2.15.1",
+    "python-multipart>=0.0.32",
     "sqlalchemy[asyncio]>=2.1.1",
     "uvicorn[standard]>=0.54.0",
 ]

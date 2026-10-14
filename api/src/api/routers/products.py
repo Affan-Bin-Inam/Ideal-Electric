@@ -36,6 +36,7 @@ from api.schemas.catalogue import (
     SuggestionOut,
 )
 from api.services.product_filters import Filters, resolve_filters
+from api.services.media_urls import attach_primary_images, load_gallery
 
 router = APIRouter(tags=["products"])
 
@@ -90,8 +91,10 @@ async def list_products(
         )
     ).scalars().all()
 
+    cards = [ProductCard.model_validate(p) for p in rows]
+    await attach_primary_images(db, [(p.id, card) for p, card in zip(rows, cards)])
     return ProductPage(
-        items=[ProductCard.model_validate(p) for p in rows],
+        items=cards,
         total=total,
         page=page,
         page_size=page_size,
@@ -246,6 +249,10 @@ async def get_product(slug: str, db: DbSession):
         )
     ).scalars().all()
 
+    images = await load_gallery(db, product.id, product.name)
+    related_cards = [ProductCard.model_validate(r) for r in related]
+    await attach_primary_images(db, [(r.id, card) for r, card in zip(related, related_cards)])
+
     return ProductDetail(
         id=product.id,
         name=product.name,
@@ -275,5 +282,6 @@ async def get_product(slug: str, db: DbSession):
             for row, d in spec_rows
         ],
         industries=[IndustryOut.model_validate(i) for i in industries],
-        related=[ProductCard.model_validate(r) for r in related],
+        related=related_cards,
+        images=images,
     )

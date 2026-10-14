@@ -2,6 +2,7 @@ import os
 import subprocess
 import sys
 from pathlib import Path
+import tempfile
 
 # The environment must be set BEFORE any `api` import, because the settings and
 # the database engine are created at import time.
@@ -15,6 +16,7 @@ assert TEST_DB_URL.rsplit("/", 1)[-1].endswith("_test"), (
 os.environ["DATABASE_URL"] = TEST_DB_URL
 os.environ["SECRET_KEY"] = "test-secret-key-that-is-at-least-32-characters-long"
 os.environ["TURNSTILE_SECRET_KEY"] = "test-turnstile-secret"
+os.environ["MEDIA_DIR"] = tempfile.mkdtemp(prefix="ideal-media-test-")
 
 import pytest  # noqa: E402
 import pytest_asyncio  # noqa: E402
@@ -50,8 +52,8 @@ async def clean_tables():
     async with engine.begin() as conn:
         await conn.execute(
             text(
-                "TRUNCATE users, refresh_tokens, audit_logs, categories, brands, industries "
-                "RESTART IDENTITY CASCADE"
+                "TRUNCATE users, refresh_tokens, audit_logs, categories, brands, industries, "
+                "media_assets RESTART IDENTITY CASCADE"
             )
         )
     yield

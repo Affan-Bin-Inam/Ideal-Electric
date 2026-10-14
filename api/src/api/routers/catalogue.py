@@ -13,6 +13,7 @@ from api.schemas.catalogue import (
     CategoryNode,
     IndustryOut,
 )
+from api.services.media_urls import load_public_documents
 
 router = APIRouter(tags=["catalogue"])
 
@@ -113,6 +114,8 @@ async def get_category(slug: str, db: DbSession):
     ).scalars().all()
     attributes = list({a.id: a for a in attribute_rows}.values())
 
+    documents = await load_public_documents(db, category.id)
+
     return CategoryDetail(
         id=category.id,
         name=category.name,
@@ -124,6 +127,7 @@ async def get_category(slug: str, db: DbSession):
         parent=CategoryBrief.model_validate(parent) if parent else None,
         children=child_nodes,
         attributes=[AttributeOut.model_validate(a) for a in attributes],
+        documents=documents,
     )
 
 

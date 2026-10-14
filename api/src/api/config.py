@@ -17,6 +17,12 @@ class Settings(BaseSettings):
     turnstile_secret_key: str = Field(min_length=1)
 
     model_config = SettingsConfigDict(env_file=".env")
+    
+    media_dir: str = "media"
+    media_url_prefix: str = "/media"
+    max_image_bytes: int = 10 * 1024 * 1024
+    max_document_bytes: int = 20 * 1024 * 1024
+    max_image_pixels: int = 40_000_000
 
 
 settings = Settings()
