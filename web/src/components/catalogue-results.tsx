@@ -2,6 +2,7 @@ import Link from "next/link";
 import { ProductCard } from "@/components/product-card";
 import { ActiveFilters, FilterPanel, SortLinks } from "@/components/catalogue-filters";
 import { getCategories } from "@/lib/categories";
+import { getIndustries } from "@/lib/industries";
 import {
   catalogueHref,
   getFacets,
@@ -17,15 +18,18 @@ export async function CatalogueResults({ searchParams }: { searchParams: SearchP
   const filters = parseFilters(await searchParams);
 
   // Three independent requests: start them together instead of one after another.
-  const [data, facets, categories] = await Promise.all([
+  const [data, facets, categories, industries] = await Promise.all([
     getProducts(toQuery(filters)),
     getFacets(toFacetQuery(filters)),
     getCategories(),
+    getIndustries()
   ]);
+  console.log("sidebar data:", { categories: categories.length, series: facets.series.length });
 
-    const panel = <FilterPanel filters={filters} facets={facets} categories={categories} />;  const filtered = Boolean(
+    const panel = <FilterPanel filters={filters} facets={facets} categories={categories} />;
+    const filtered = Boolean(
     filters.category || filters.series || filters.industry || filters.q || filters.attrs.length,
-  );
+    );
 
   return (
     <div className="mt-6 lg:grid lg:grid-cols-[16rem_1fr] lg:gap-10">
@@ -63,7 +67,7 @@ export async function CatalogueResults({ searchParams }: { searchParams: SearchP
           </button>
         </form>
 
-        <ActiveFilters filters={filters} facets={facets} categories={categories} />
+        <ActiveFilters filters={filters} facets={facets} categories={categories} industries={industries} />
 
         <div className="mt-4 flex flex-wrap items-center justify-between gap-2">
           <p className="text-sm text-muted">

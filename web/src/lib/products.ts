@@ -1,5 +1,5 @@
 import { cacheLife, cacheTag } from "next/cache";
-import { apiGet } from "@/lib/api";
+import { ApiError, apiGet } from "@/lib/api";
 import type { Facets, ProductList } from "@/lib/types";
 
 type RawParams = Record<string, string | string[] | undefined>;
@@ -106,16 +106,36 @@ export function toggleAttr(
   return { ...f, attrs, page: 1 };
 }
 
+const EMPTY_LIST: ProductList = { items: [], total: 0, page: 1, page_size: 12, pages: 0 };
+const EMPTY_FACETS: Facets = { total: 0, series: [], attributes: [] };
+
+// A visitor can type any address. When the API rejects the filters (unknown category,
+// page out of range...), show "no results" instead of crashing. Server faults (5xx) still throw.
+async function orEmpty<T>(request: Promise<T>, empty: T): Promise<T> {
+  try {
+    return await request;
+  } catch (error) {
+    if (error instanceof ApiError && error.status >= 400 && error.status < 500) {
+      console.warn(error.message); // keep a trace, so a bug of ours isn't silently hidden
+      return empty;
+    }
+    throw error;
+  }
+}
+
 export async function getProducts(query: string): Promise<ProductList> {
   "use cache";
   cacheLife("minutes");
   cacheTag("products");
-  return apiGet<ProductList>(`/api/v1/products${query ? `?${query}` : ""}`);
+  return orEmpty(apiGet<ProductList>(`/api/v1/products${query ? `?${query}` : ""}`), EMPTY_LIST);
 }
 
 export async function getFacets(query: string): Promise<Facets> {
   "use cache";
   cacheLife("minutes");
   cacheTag("products");
-  return apiGet<Facets>(`/api/v1/products/facets${query ? `?${query}` : ""}`);
+  return orEmpty(
+    apiGet<Facets>(`/api/v1/products/facets${query ? `?${query}` : ""}`),
+    EMPTY_FACETS,
+  );
 }

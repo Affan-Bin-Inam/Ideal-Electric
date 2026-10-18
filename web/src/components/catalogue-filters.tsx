@@ -8,9 +8,9 @@ import {
   withPatch,
   type CatalogueFilters,
 } from "@/lib/products";
-import type { Category, Facets } from "@/lib/types";
+import type { Category, Facets, Industry } from "@/lib/types";
 
-type Props = { filters: CatalogueFilters; facets: Facets; categories: Category[] };
+type Props = { filters: CatalogueFilters; facets: Facets; categories: Category[]; industries?: Industry[] };
 
 const heading = "text-xs font-semibold uppercase tracking-wider text-muted";
 
@@ -131,7 +131,7 @@ export function FilterPanel({ filters, facets, categories }: Props) {
   );
 }
 
-export function ActiveFilters({ filters, facets, categories }: Props) {
+export function ActiveFilters({ filters, facets, categories, industries = [] }: Props) {
   const chips: { label: string; href: string }[] = [];
 
   if (filters.category) {
@@ -145,7 +145,7 @@ export function ActiveFilters({ filters, facets, categories }: Props) {
   }
   if (filters.industry) {
     chips.push({
-      label: filters.industry.replace(/-/g, " "),
+      label: industries.find((i) => i.slug === filters.industry)?.name ?? filters.industry.replace(/-/g, " "),
       href: catalogueHref(withPatch(filters, { industry: undefined })),
     });
   }
