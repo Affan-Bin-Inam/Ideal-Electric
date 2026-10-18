@@ -11,8 +11,8 @@ export class ApiError extends Error {
   }
 }
 
-export async function apiGet<T>(path: string): Promise<T> {
-  const res = await fetch(`${API_ORIGIN}${path}`);
+export async function apiGet<T>(path: string, init?: RequestInit): Promise<T> {
+  const res = await fetch(`${API_ORIGIN}${path}`, init);
   if (!res.ok) {
     throw new ApiError(res.status, `API request failed: ${path} (${res.status})`);
   }
