@@ -57,3 +57,70 @@ export type HomepageSection = {
 };
 
 export type HomepageResponse = { sections: HomepageSection[] };
+
+export type ProductList = {
+  items: ProductCardData[];
+  total: number;
+  page: number;
+  page_size: number;
+  pages: number;
+};
+
+export type Category = {
+  id: number;
+  name: string;
+  slug: string;
+  description: string | null;
+  product_count: number;
+  children: Category[];
+};
+
+export type FacetOption = { value: string; count: number };
+
+export type AttributeFacet = {
+  key: string;
+  label: string;
+  unit: string | null;
+  data_type: string; // "single_choice" or "multi_choice" so far
+  options: FacetOption[];
+};
+
+export type SeriesFacet = { name: string; slug: string; count: number };
+
+export type Facets = {
+  total: number;
+  series: SeriesFacet[];
+  attributes: AttributeFacet[];
+};
+
+export type Specification = {
+  key: string;
+  label: string;
+  group_name: string | null;
+  unit: string | null;
+  data_type: string;
+  is_inquiry_option: boolean; // true for specs the visitor picks when asking for a quote
+  value: string | string[];
+};
+
+export type ProductDetail = {
+  id: number;
+  name: string;
+  slug: string;
+  model_code: string | null;
+  summary: string | null;
+  description: string | null;
+  is_featured: boolean;
+  seo_title: string | null;
+  seo_description: string | null;
+  category: CategoryRef;
+  parent_category: CategoryRef | null;
+  brand: { name: string; slug: string } | null;
+  series: SeriesRef | null;
+  features: string[];
+  applications: unknown[]; // shape unknown until one exists
+  specifications: Specification[];
+  industries: unknown[]; // shape unknown until one is linked
+  related: ProductCardData[];
+  images: unknown[]; // shape unknown until one is uploaded
+};
