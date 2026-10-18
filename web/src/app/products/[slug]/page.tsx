@@ -1,3 +1,4 @@
+import { SITE_URL } from "@/lib/site-url";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -24,6 +25,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     title: product.seo_title ?? product.name,
     description: product.seo_description ?? product.summary ?? undefined,
+    alternates: { canonical: `/products/${product.slug}` },
   };
 }
 
@@ -97,11 +99,41 @@ async function ProductContent({ slug }: { slug: string }) {
     const group = spec.group_name ?? "Specifications";
     specGroups.set(group, [...(specGroups.get(group) ?? []), spec]);
   }
-
+  // Structured data: tells search engines what this page is. There's no price or stock
+  // because you don't publish them, so there is deliberately no "offers" block.
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "Product",
+        name: product.name,
+        description: product.description ?? product.summary ?? undefined,
+        ...(product.model_code ? { model: product.model_code, mpn: product.model_code } : {}),
+        ...(product.brand ? { brand: { "@type": "Brand", name: product.brand.name } } : {}),
+        category: product.category.name,
+        url: `${SITE_URL}/products/${product.slug}`,
+      },
+      {
+        "@type": "BreadcrumbList",
+        itemListElement: [...crumbs, { label: product.name, href: `/products/${product.slug}` }].map(
+          (c, i) => ({
+            "@type": "ListItem",
+            position: i + 1,
+            name: c.label,
+            item: `${SITE_URL}${c.href}`,
+          }),
+        ),
+      },
+    ],
+  };
   const heading = "text-xl font-bold tracking-tight";
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c") }}
+      />
       <nav aria-label="Breadcrumb" className="text-sm text-muted">
         <ol className="flex flex-wrap items-center gap-x-2 gap-y-1">
           {crumbs.map((c) => (

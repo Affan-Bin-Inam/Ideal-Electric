@@ -28,3 +28,11 @@ export async function getAllProductSlugs(): Promise<string[]> {
   } while (page <= pages);
   return slugs;
 }
+
+// A cached copy for the sitemap, so it doesn't call the API on every request.
+export async function getProductSlugs(): Promise<string[]> {
+  "use cache";
+  cacheLife("hours");
+  cacheTag("products");
+  return getAllProductSlugs();
+}
